@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DJ EPK</title>
+  <meta name="description" content="Electronic Press Kit" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="#" class="logo" id="logo">DJ</a>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#music">Music</a>
+        <a href="#shows">Shows</a>
+        <a href="#photos">Photos</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <p class="eyebrow" id="location"></p>
+          <h1 id="name"></h1>
+          <p class="tagline" id="tagline"></p>
+          <div class="genres" id="genres"></div>
+          <div class="socials" id="socials"></div>
+        </div>
+        <div class="hero-image">
+          <img id="profileImage" src="" alt="Artist photo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section">
+      <div class="container">
+        <h2>About</h2>
+        <p id="bio" class="bio"></p>
+        <p id="techRider" class="tech-rider"></p>
+      </div>
+    </section>
+
+    <!-- Music -->
+    <section id="music" class="section alt">
+      <div class="container">
+        <h2>Featured Mix</h2>
+        <div id="featuredEmbed" class="embed-wrapper"></div>
+      </div>
+    </section>
+
+    <!-- Shows -->
+    <section id="shows" class="section">
+      <div class="container">
+        <h2>Upcoming Shows</h2>
+        <div id="showsList" class="shows-list"></div>
+      </div>
+    </section>
+
+    <!-- Photos -->
+    <section id="photos" class="section alt">
+      <div class="container">
+        <h2>Press Photos</h2>
+        <div id="photoGrid" class="photo-grid"></div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section">
+      <div class="container contact-box">
+        <h2>Booking</h2>
+        <p id="bookingNote"></p>
+        <a id="bookingEmail" href="#" class="btn"></a>
+        <a id="bookingForm" href="#" class="btn outline" style="display:none;">Booking Form</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p id="footerText"></p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script>
+    // Populate the page from CONFIG
+    document.getElementById("name").textContent = CONFIG.name;
+    document.getElementById("logo").textContent = CONFIG.name;
+    document.getElementById("tagline").textContent = CONFIG.tagline;
+    document.getElementById("location").textContent = CONFIG.location;
+    document.getElementById("bio").textContent = CONFIG.bio;
+    document.getElementById("profileImage").src = CONFIG.profileImage;
+    document.getElementById("profileImage").alt = CONFIG.name;
+    document.title = `${CONFIG.name} — EPK`;
+
+    // Genres
+    const genresEl = document.getElementById("genres");
+    CONFIG.genres.forEach(g => {
+      const span = document.createElement("span");
+      span.className = "genre-tag";
+      span.textContent = g;
+      genresEl.appendChild(span);
+    });
+
+    // Socials
+    const socialsEl = document.getElementById("socials");
+    const socialLabels = {
+      soundcloud: "SoundCloud",
+      instagram: "Instagram",
+      spotify: "Spotify",
+      mixcloud: "Mixcloud",
+      youtube: "YouTube",
+      tiktok: "TikTok"
+    };
+    Object.entries(CONFIG.socials).forEach(([key, url]) => {
+      if (!url) return;
+      const a = document.createElement("a");
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = socialLabels[key] || key;
+      socialsEl.appendChild(a);
+    });
+
+    // Featured embed
+    if (CONFIG.featuredEmbed) {
+      document.getElementById("featuredEmbed").innerHTML = CONFIG.featuredEmbed;
+    }
+
+    // Shows
+    const showsList = document.getElementById("showsList");
+    if (CONFIG.shows.length === 0) {
+      showsList.innerHTML = `<p class="muted">No upcoming shows listed.</p>`;
+    } else {
+      CONFIG.shows.forEach(show => {
+        const row = document.createElement("div");
+        row.className = "show-row";
+        row.innerHTML = `
+          <div class="show-date">${show.date}</div>
+          <div class="show-info">
+            <strong>${show.venue}</strong>
+            <span>${show.city}</span>
+          </div>
+          ${show.link ? `<a href="${show.link}" target="_blank" rel="noopener" class="show-link">Tickets</a>` : ""}
+        `;
+        showsList.appendChild(row);
+      });
+    }
+
+    // Photos
+    const photoGrid = document.getElementById("photoGrid");
+    CONFIG.photos.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = `${CONFIG.name} press photo`;
+      img.loading = "lazy";
+      photoGrid.appendChild(img);
+    });
+
+    // Tech rider
+    if (CONFIG.techRider) {
+      document.getElementById("techRider").textContent = CONFIG.techRider;
+    }
+
+    // Booking
+    document.getElementById("bookingNote").textContent = CONFIG.bookingNote;
+    const emailLink = document.getElementById("bookingEmail");
+    emailLink.href = `mailto:${CONFIG.bookingEmail}`;
+    emailLink.textContent = CONFIG.bookingEmail;
+
+    if (CONFIG.bookingForm) {
+      const formLink = document.getElementById("bookingForm");
+      formLink.href = CONFIG.bookingForm;
+      formLink.style.display = "inline-block";
+    }
+
+    // Footer
+    document.getElementById("footerText").textContent = 
+      `© ${new Date().getFullYear()} ${CONFIG.name} · Electronic Press Kit`;
+  </script>
+</body>
+</html>
